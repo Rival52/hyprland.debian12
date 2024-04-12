@@ -1,0 +1,82 @@
+#!/bin/bash
+
+#!/bin/bash
+
+# Author  : ONJANIAINA Henintsoa Stephana
+# Created : 23/03/24 16:35:21
+# Repo : henintsoa98/hyprland.debian12
+# File : BIN/modem
+
+while true
+do
+	NUMBER=$(mmcli -L | sed "s#/org/freedesktop/ModemManager[0-9]/Modem/##" |awk '{print $1}')
+	if [[ "$NUMBER" == "No" ]]
+	then
+		sleep 1
+	else
+		break
+	fi
+done
+
+INTERFACE=$(mmcli -m $NUMBER --output-keyvalue | grep "ports" | grep "net" | awk '{print $3}')
+
+if [[ "$1" == "connect" ]]
+then
+	if [[ "$2" == "orange" ]]
+	then
+		mmcli -m $NUMBER -e
+		mmcli -m $NUMBER --simple-connect="apn=orangeworld"
+	else
+		mmcli -m $NUMBER -e
+		mmcli -m $NUMBER --simple-connect="apn=internet"
+	fi
+	echo "getting IP address"
+	sudo ip link set $INTERFACE up
+	sudo dhclient $INTERFACE
+fi
+
+if [[ "$1" == "disconnect" ]]
+then
+	mmcli -m $NUMBER --simple-disconnect
+fi
+
+if [[ "$1" == "disable" ]]
+then
+	mmcli -m $NUMBER -d
+fi
+
+if [[ "$1" == "ussd" ]]
+then
+	STATUS=$(mmcli -m $NUMBER --3gpp-ussd-status |grep status |awk '{print $5}')
+	if [[ "$2" == "reconnect" ]]
+	then
+		echo "attempt to reconnecting ..."
+		if [[ "$STATUS" == "user-response" ]]
+		then
+			mmcli -m $NUMBER --3gpp-ussd-status | sed "/ModemManager/d;/user-response/d;/----/d;s/|//;s/  //g"
+		fi
+	else
+		if [[ "$STATUS" == "user-response" ]]
+		then
+			mmcli -m $NUMBER --3gpp-ussd-cancel
+		fi
+		mmcli -m $NUMBER --3gpp-ussd-initiate="$2"
+	fi
+	while true
+	do
+		STATUS=$(mmcli -m $NUMBER --3gpp-ussd-status |grep status |awk '{print $5}')
+		if [[ "$STATUS" == "user-response" ]]
+		then
+			echo -n "> "
+			read SELECT
+			if [[ "$SELECT" == "quit" ]]
+			then
+				mmcli -m $NUMBER --3gpp-ussd-cancel
+				break
+			fi
+			mmcli -m $NUMBER --3gpp-ussd-respond="$SELECT"
+		else
+			break
+		fi
+	done
+fi

@@ -1,0 +1,17 @@
+partial modifier_keys                 
+xkb_symbols "swap_fn_keys" {  
+    replace key <FK01> { [ agrave ] };
+    replace key <FK05> { [ eacute ] }; 
+    replace key <FK06> { [ egrave ] }; 
+    replace key <FK07> { [ ecircumflex ] };
+    replace key <FK08> { [ underscore ] }; 
+    replace key <FK09> { [ backslash ] }; 
+    replace key <FK10> { [ bar ] }; 
+    replace key <I179> { [ F1 ] };     
+    replace key <I173> { [ F5 ] };    
+    replace key <I171> { [ F6 ] };    
+    replace key <I172> { [ F7 ] };    
+    replace key <I174> { [ F8 ] };    
+    replace key <I180> { [ F9 ] };   
+    replace key <I163> { [ F10 ] };   
+}; 
