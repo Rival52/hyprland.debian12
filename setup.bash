@@ -128,6 +128,14 @@ cp CONFIG/hyprland.conf $HOME/.config/hypr/
 cp CONFIG/evdev $HOME/.config/rules/
 cp CONFIG/ctrl $HOME/.config/symbols/
 
+# AUTOLOGIN ON TTY
+echo -ne "${BRed}Autologin [from debian server only] : (y) / (n) ? ${Reset}"
+read CHOICE
+if [[ "$CHOICE" == "y" ]]
+then
+	sudo su -c "sed -i \"s#^ExecStart#ExecStart=-/sbin/agetty -a $USER --noclear %I \$TERM\n\#ExecStart#\" /etc/systemd/system/getty.target.wants/getty@tty1.service"
+fi
+
 # INSTALL OTHER PACKAGE
 echo -ne "${BPurple}Want install some software that fit on ${BYellow}Hyprland ${BPurple}and ${BYellow}Wayland? ${BWhite}[RECOMMANDED](yn) : ${BRed}"
 
