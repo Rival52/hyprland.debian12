@@ -58,7 +58,7 @@ sudo apt install meson wget build-essential ninja-build cmake-extras cmake gette
 # wifi modem in CLI
 sudo cp BIN/* /usr/local/bin
 sudo chmod +x /usr/local/bin/{wifi,modem,color}
-sudo apt install -y network-manager
+sudo apt install -y network-manager iw wireless-tools
 
 
 # EXTRACT SOURCE
